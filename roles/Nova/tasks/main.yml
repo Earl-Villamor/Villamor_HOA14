@@ -1,0 +1,276 @@
+  - name: Nova Installation
+    apt:
+      name: nova-compute
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Configuring Nova.conf
+    tags: nova, edit, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "transport_url = rabbit://"
+      line: "transport_url == rabbit://openstack:earlv@ubuntu_server"
+      state: present
+
+  - name: Configuring Identity User
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: "auth_strategy = keystone"
+      state: present
+    check_mode: yes
+
+  - name: Configuring keystone_authtoken v1
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "www_authenticate_uri = <None>"
+      line: "www_authenticate_uri = http://ubuntu_server:5000"
+      state: present
+
+  - name: Configuring keystone_authtoken v2
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "memcached_servers = <None>"
+      line: "memcached_servers = ubuntu_server:11211"
+      state: present
+
+  - name: Configuring keystone_authtoken v3
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "auth_type = <None>"
+      line: "auth_type = password"
+      state: present
+
+  - name: Adding the Configuration-authtoken v1
+    lineinfile:
+      path: /etc/nova/nova.conf
+      insertafter: '^\[keystone_authtoken\]'
+      line: "auth_url = http://ubuntu_server:5000"
+      state: present
+
+
+  - name: Adding the Configuration-authtoken v2
+    lineinfile:
+      dest: /etc/nova/nova.conf
+      insertafter: '^\[keystone_authtoken\]'
+      line: "project_domain_name = Default"
+      state: present
+
+  - name: Adding the Configuration-authtoken v3
+    lineinfile:
+      path: /etc/nova/nova.conf
+      insertafter: '^\[keystone_authtoken\]'
+      line: "user_domain_name = Default"
+      state: present
+
+  - name: Adding the Configuration-authtoken v4
+    lineinfile:
+      path: /etc/nova/nova.conf
+      insertafter: '^\[keystone_authtoken\]'
+      line: "project_name = service"
+      state: present
+
+  - name: Adding the Configuration-authtoken v5
+    lineinfile:
+      path: /etc/nova/nova.conf
+      insertafter: '^\[keystone_authtoken\]'
+      line: "username = admin"
+      state: present
+
+  - name: Adding the Configuration-authtoken v6
+    lineinfile:
+      path: /etc/nova/nova.conf
+      insertafter: '^\[keystone_authtoken\]'
+      line: "password = earlv"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v1
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "my_ip = <host_ipv4>"
+      line: "my_ip = 192.168.56.119"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v2
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "auth_url = <None>"
+      line: "auth_url = http://ubuntu_server:5000"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v3
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "auth_type = <None>"
+      line: "auth_type = password"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v4
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "project_domain_name = <None>"
+      line: "project_domain_name = default"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v5
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "user_domain_name = <None>"
+      line: "user_domain_name = default"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v6
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "region_name = <None>"
+      line: "region_name = RegionOne"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v7
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "project__name = <None>"
+      line: "project_name = service"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v8
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "username = <None>"
+      line: "username = neutron"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v9
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "password = <None>"
+      line: "password = earlv"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v10
+    lineinfile:
+      path: /etc/nova/nova.conf
+      line: "enabled = true"
+      state: present
+    check_mode: yes
+
+  - name: Configuring nova.conf Remote Console Access v11
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "server_listen = 127.0.0.1"
+      line: "server_listen = 0.0.0.0"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v12
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "server_proxyclient_address = 127.0.0.1"
+      line: "server_proxyclient_address = $my_ip"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v13
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "novncproxy_base_url = http://127.0.0.1:6080/vnc_auto.html"
+      line: "novncproxy_base_url = http://ubuntu_server:6080/vnc_auto.html"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v14
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "api_servers = <None>"
+      line: "api_servers = http://ubuntu_server:9292"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access v15
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "lock_path = <None>"
+      line: "lock_path = /var/lib/nova/tmp"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access (placement v1)
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "auth_url = <None>"
+      line: "auth_url = http://ubuntu_server:5000"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access (placement v2)
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "auth_type = <None>"
+      line: "auth_type = password"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access (placement v3)
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "project_domain_name = <None>"
+      line: "project_domain_name = Default"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access (placement v4)
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "user_domain_name = <None>"
+      line: "user_domain_name = Default"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access (placement v5)
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "region_name = <None>"
+      line: "region_name = RegionOne"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access (placement v6)
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "project__name = <None>"
+      line: "project_name = service"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access (placement v7)
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "username = <None>"
+      line: "username = placement"
+      state: present
+
+  - name: Configuring nova.conf Remote Console Access (placement v8)
+    tags: nova, ubuntu
+    lineinfile:
+      path: /etc/nova/nova.conf
+      regexp: "password = <None>"
+      line: "password = earlv"
+      state: present
+
+  - name: Restarting Nova Service
+    service:
+      name: nova-compute
+      state: restarted
+

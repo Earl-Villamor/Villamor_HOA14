@@ -1,0 +1,18 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Updating and Upgrading the OS
+    apt:
+      name: "*"
+      state: latest
+
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: ubuntu_server
+  become: true
+  roles:
+    - Glance
+    - Nova
+    - Keystone

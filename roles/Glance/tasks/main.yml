@@ -1,0 +1,50 @@
+  - name: Creating an admin-openrc.sh file
+    tags: glance, ubuntu, file
+    copy:
+      src: admin-openrc.sh
+      dest: /home/earlv
+      owner: root
+      group: root
+      mode: 0744
+
+  - name: Glance Installation
+    apt:
+      name: glance
+      state: present
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Configuring Glance files
+    tags: glance, ubuntu
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      regexp: "connection = sqli:////var/lib/glance/glance.sqlite"
+      line: "connection = mysql+pymysql+://glance:earlv@ubuntu_server/glance"
+      state: present
+
+  - name: Configuring Authtoken v1
+    tags: glance, ubuntu
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      regexp: "www_authenticate_uri = <None>"
+      line: "www_authenticate_uri = http://ubuntu_server:5000"
+      state: present
+
+  - name: Configuring Authtoken v2
+    tags: glance, ubuntu
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      regexp: "memcached_servers = <None>"
+      line: "memcached_servers = ubuntu_server:11211"
+      state: present
+
+  - name: Configuring Authtoken v3
+    tags: glance, ubuntu
+    lineinfile:
+      path: /etc/glance/glance-api.conf
+      regexp: "auth_type = <None>"
+      line: "auth_type = password"
+
+  - name: Restarting Glance
+    service:
+      name: glance-api
+      state: restarted
